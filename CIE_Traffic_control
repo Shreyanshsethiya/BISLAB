@@ -1,0 +1,142 @@
+import numpy as np
+
+def traffic_flow_fitness(signal_timings, traffic_data):
+    """Fitness function for optimizing traffic flow.
+    signal_timings: A 1D array representing signal timings at an intersection.
+    traffic_data: Traffic volume and flow information for the same intersection.
+    """
+    # Simulate traffic flow based on signal timings and compute congestion
+    congestion = np.sum(traffic_data / (signal_timings + 1))  # Avoid division by zero
+    return congestion
+
+def initialize_population(grid_size, solution_dim, bounds):
+    """Initialize a 2D grid of random solutions within the given bounds."""
+    lower, upper = bounds
+    population = np.random.uniform(lower, upper, (grid_size, grid_size, solution_dim))
+    return population
+
+def evaluate_fitness(population, traffic_data):
+    """Evaluate the fitness of each solution in the population."""
+    fitness = np.zeros((population.shape[0], population.shape[1]))
+    for i in range(population.shape[0]):
+        for j in range(population.shape[1]):
+            fitness[i, j] = traffic_flow_fitness(population[i, j], traffic_data[i, j])
+    return fitness
+
+def update_states(population, fitness, neighborhood_radius, bounds):
+    """Update the state of each cell based on its neighbors."""
+    grid_size = population.shape[0]
+    new_population = np.copy(population)
+    
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Define the neighborhood
+            neighbors = []
+            for di in range(-neighborhood_radius, neighborhood_radius + 1):
+                for dj in range(-neighborhood_radius, neighborhood_radius + 1):
+                    ni, nj = (i + di) % grid_size, (j + dj) % grid_size
+                    neighbors.append((ni, nj))
+            
+            # Find the best neighbor
+            best_neighbor = min(neighbors, key=lambda n: fitness[n[0], n[1]])
+            new_population[i, j] = population[best_neighbor]
+
+            # Add small random perturbation for exploration
+            lower, upper = bounds
+            perturbation = np.random.uniform(-0.1, 0.1, population.shape[2])
+            new_population[i, j] = np.clip(new_population[i, j] + perturbation, lower, upper)
+
+    return new_population
+
+def parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius, traffic_data):
+    """Main function to run the Parallel Cellular Algorithm for traffic optimization."""
+    # Step 1: Initialize Population
+    population = initialize_population(grid_size, solution_dim, bounds)
+
+    # Step 2: Iterate to update states and evaluate fitness
+    best_solution = None
+    best_fitness = float('inf')
+
+    for iteration in range(iterations):
+        # Evaluate fitness
+        fitness = evaluate_fitness(population, traffic_data)
+
+        # Track the best solution
+        min_fitness_idx = np.unravel_index(np.argmin(fitness), fitness.shape)
+        if fitness[min_fitness_idx] < best_fitness:
+            best_fitness = fitness[min_fitness_idx]
+            best_solution = population[min_fitness_idx]
+
+        # Update states
+        population = update_states(population, fitness, neighborhood_radius, bounds)
+
+        print(f"Iteration {iteration + 1}: Best Fitness = {best_fitness}")
+
+    return best_solution, best_fitness
+
+# Parameters
+grid_size = 10            # Size of the 2D grid
+solution_dim = 2          # Dimensionality of the solution (e.g., signal timings)
+bounds = (10, 120)        # Bounds for signal timings in seconds
+iterations = 50           # Number of iterations
+neighborhood_radius = 1   # Radius of the neighborhood
+traffic_data = np.random.uniform(50, 500, (grid_size, grid_size, solution_dim))  # Simulated traffic data
+
+# Run the algorithm
+best_solution, best_fitness = parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius, traffic_data)
+
+print("\nBest Signal Timings:", best_solution)
+print("Minimum Congestion:", best_fitness)
+Iteration 1: Best Fitness = 1.717864642085341
+Iteration 2: Best Fitness = 1.717864642085341
+Iteration 3: Best Fitness = 1.6922580859549452
+Iteration 4: Best Fitness = 1.6918884718521725
+Iteration 5: Best Fitness = 1.6909251970457535
+Iteration 6: Best Fitness = 1.6907958323911565
+Iteration 7: Best Fitness = 1.6899288202661507
+Iteration 8: Best Fitness = 1.6899288202661507
+Iteration 9: Best Fitness = 1.6892424479194277
+Iteration 10: Best Fitness = 1.6892424479194277
+Iteration 11: Best Fitness = 1.6892424479194277
+Iteration 12: Best Fitness = 1.6891673299743923
+Iteration 13: Best Fitness = 1.6883201722075842
+Iteration 14: Best Fitness = 1.6883201722075842
+Iteration 15: Best Fitness = 1.6883201722075842
+Iteration 16: Best Fitness = 1.6880089184886846
+Iteration 17: Best Fitness = 1.6870400507093122
+Iteration 18: Best Fitness = 1.6870400507093122
+Iteration 19: Best Fitness = 1.6870400507093122
+Iteration 20: Best Fitness = 1.6870400507093122
+Iteration 21: Best Fitness = 1.6870400507093122
+Iteration 22: Best Fitness = 1.6870400507093122
+Iteration 23: Best Fitness = 1.6870400507093122
+Iteration 24: Best Fitness = 1.6870400507093122
+Iteration 25: Best Fitness = 1.6870400507093122
+Iteration 26: Best Fitness = 1.6870400507093122
+Iteration 27: Best Fitness = 1.6870400507093122
+Iteration 28: Best Fitness = 1.6864387319544627
+Iteration 29: Best Fitness = 1.6864387319544627
+Iteration 30: Best Fitness = 1.6864387319544627
+Iteration 31: Best Fitness = 1.6864387319544627
+Iteration 32: Best Fitness = 1.6864387319544627
+Iteration 33: Best Fitness = 1.6864387319544627
+Iteration 34: Best Fitness = 1.6864387319544627
+Iteration 35: Best Fitness = 1.6864387319544627
+Iteration 36: Best Fitness = 1.6863980520816102
+Iteration 37: Best Fitness = 1.6863980520816102
+Iteration 38: Best Fitness = 1.6863980520816102
+Iteration 39: Best Fitness = 1.6856319465593548
+Iteration 40: Best Fitness = 1.6856319465593548
+Iteration 41: Best Fitness = 1.6856319465593548
+Iteration 42: Best Fitness = 1.6856319465593548
+Iteration 43: Best Fitness = 1.6856319465593548
+Iteration 44: Best Fitness = 1.6856319465593548
+Iteration 45: Best Fitness = 1.6847009956313488
+Iteration 46: Best Fitness = 1.6832922162038546
+Iteration 47: Best Fitness = 1.6832922162038546
+Iteration 48: Best Fitness = 1.6832922162038546
+Iteration 49: Best Fitness = 1.6832922162038546
+Iteration 50: Best Fitness = 1.6832922162038546
+
+Best Signal Timings: [101.3707552   74.89705198]
+Minimum Congestion: 1.6832922162038546
