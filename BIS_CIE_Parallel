@@ -1,0 +1,435 @@
+import numpy as np
+
+def quadratic_function(x):
+    """Quadratic function for optimization. The input x is a 2D array."""
+    return np.sum(x**2-10*x+5)
+
+def initialize_population(grid_size, solution_dim, bounds):
+    """Initialize a 2D grid of random solutions within the given bounds."""
+    lower, upper = bounds
+    population = np.random.uniform(lower, upper, (grid_size, grid_size, solution_dim))
+    return population
+
+def evaluate_fitness(population):
+    """Evaluate the fitness of each solution in the population."""
+    fitness = np.zeros((population.shape[0], population.shape[1]))
+    for i in range(population.shape[0]):
+        for j in range(population.shape[1]):
+            fitness[i, j] = quadratic_function(population[i, j])
+    return fitness
+
+def update_states(population, fitness, neighborhood_radius, bounds):
+    """Update the state of each cell based on its neighbors."""
+    grid_size = population.shape[0]
+    new_population = np.copy(population)
+    
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Define the neighborhood
+            neighbors = []
+            for di in range(-neighborhood_radius, neighborhood_radius + 1):
+                for dj in range(-neighborhood_radius, neighborhood_radius + 1):
+                    ni, nj = (i + di) % grid_size, (j + dj) % grid_size
+                    neighbors.append((ni, nj))
+            
+            # Find the best neighbor
+            best_neighbor = min(neighbors, key=lambda n: fitness[n[0], n[1]])
+            new_population[i, j] = population[best_neighbor]
+
+            # Add small random perturbation for exploration
+            lower, upper = bounds
+            perturbation = np.random.uniform(-0.1, 0.1, population.shape[2])
+            new_population[i, j] = np.clip(new_population[i, j] + perturbation, lower, upper)
+
+    return new_population
+
+def parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius):
+    """Main function to run the Parallel Cellular Algorithm."""
+    # Step 1: Initialize Population
+    population = initialize_population(grid_size, solution_dim, bounds)
+
+    # Step 2: Iterate to update states and evaluate fitness
+    best_solution = None
+    best_fitness = float('inf')
+
+    for iteration in range(iterations):
+        # Evaluate fitness
+        fitness = evaluate_fitness(population)
+
+        # Track the best solution
+        min_fitness_idx = np.unravel_index(np.argmin(fitness), fitness.shape)
+        if fitness[min_fitness_idx] < best_fitness:
+            best_fitness = fitness[min_fitness_idx]
+            best_solution = population[min_fitness_idx]
+
+        # Update states
+        population = update_states(population, fitness, neighborhood_radius, bounds)
+
+        print(f"Iteration {iteration + 1}: Best Fitness = {best_fitness}")
+
+    return best_solution, best_fitness
+
+# Parameters
+grid_size = 10            # Size of the 2D grid
+solution_dim = 2          # Dimensionality of the solution
+bounds = (-5, 5)          # Bounds for the solution space
+iterations = 100          # Number of iterations
+neighborhood_radius = 1   # Radius of the neighborhood
+
+# Run the algorithm
+best_solution, best_fitness = parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius)
+
+print("\nBest Solution:", best_solution)
+print("Best Fitness:", best_fitness)
+import numpy as np
+
+def quadratic_function(x):
+    """Quadratic function for optimization. The input x is a 2D array."""
+    return np.sum(x**2-10*x+5)
+
+def initialize_population(grid_size, solution_dim, bounds):
+    """Initialize a 2D grid of random solutions within the given bounds."""
+    lower, upper = bounds
+    population = np.random.uniform(lower, upper, (grid_size, grid_size, solution_dim))
+    return population
+
+def evaluate_fitness(population):
+    """Evaluate the fitness of each solution in the population."""
+    fitness = np.zeros((population.shape[0], population.shape[1]))
+    for i in range(population.shape[0]):
+        for j in range(population.shape[1]):
+            fitness[i, j] = quadratic_function(population[i, j])
+    return fitness
+
+def update_states(population, fitness, neighborhood_radius, bounds):
+    """Update the state of each cell based on its neighbors."""
+    grid_size = population.shape[0]
+    new_population = np.copy(population)
+    
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Define the neighborhood
+            neighbors = []
+            for di in range(-neighborhood_radius, neighborhood_radius + 1):
+                for dj in range(-neighborhood_radius, neighborhood_radius + 1):
+                    ni, nj = (i + di) % grid_size, (j + dj) % grid_size
+                    neighbors.append((ni, nj))
+            
+            # Find the best neighbor
+            best_neighbor = min(neighbors, key=lambda n: fitness[n[0], n[1]])
+            new_population[i, j] = population[best_neighbor]
+
+            # Add small random perturbation for exploration
+            lower, upper = bounds
+            perturbation = np.random.uniform(-0.1, 0.1, population.shape[2])
+            new_population[i, j] = np.clip(new_population[i, j] + perturbation, lower, upper)
+
+    return new_population
+
+def parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius):
+    """Main function to run the Parallel Cellular Algorithm."""
+    # Step 1: Initialize Population
+    population = initialize_population(grid_size, solution_dim, bounds)
+
+    # Step 2: Iterate to update states and evaluate fitness
+    best_solution = None
+    best_fitness = float('inf')
+
+    for iteration in range(iterations):
+        # Evaluate fitness
+        fitness = evaluate_fitness(population)
+
+        # Track the best solution
+        min_fitness_idx = np.unravel_index(np.argmin(fitness), fitness.shape)
+        if fitness[min_fitness_idx] < best_fitness:
+            best_fitness = fitness[min_fitness_idx]
+            best_solution = population[min_fitness_idx]
+
+        # Update states
+        population = update_states(population, fitness, neighborhood_radius, bounds)
+
+        print(f"Iteration {iteration + 1}: Best Fitness = {best_fitness}")
+
+    return best_solution, best_fitness
+
+# Parameters
+grid_size = 10            # Size of the 2D grid
+solution_dim = 2          # Dimensionality of the solution
+bounds = (-5, 5)          # Bounds for the solution space
+iterations = 100          # Number of iterations
+neighborhood_radius = 1   # Radius of the neighborhood
+
+# Run the algorithm
+best_solution, best_fitness = parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius)
+
+print("\nBest Solution:", best_solution)
+print("Best Fitness:", best_fitness)
+import numpy as np
+
+def quadratic_function(x):
+    """Quadratic function for optimization. The input x is a 2D array."""
+    return np.sum(x**2-10*x+5)
+
+def initialize_population(grid_size, solution_dim, bounds):
+    """Initialize a 2D grid of random solutions within the given bounds."""
+    lower, upper = bounds
+    population = np.random.uniform(lower, upper, (grid_size, grid_size, solution_dim))
+    return population
+
+def evaluate_fitness(population):
+    """Evaluate the fitness of each solution in the population."""
+    fitness = np.zeros((population.shape[0], population.shape[1]))
+    for i in range(population.shape[0]):
+        for j in range(population.shape[1]):
+            fitness[i, j] = quadratic_function(population[i, j])
+    return fitness
+
+def update_states(population, fitness, neighborhood_radius, bounds):
+    """Update the state of each cell based on its neighbors."""
+    grid_size = population.shape[0]
+    new_population = np.copy(population)
+    
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Define the neighborhood
+            neighbors = []
+            for di in range(-neighborhood_radius, neighborhood_radius + 1):
+                for dj in range(-neighborhood_radius, neighborhood_radius + 1):
+                    ni, nj = (i + di) % grid_size, (j + dj) % grid_size
+                    neighbors.append((ni, nj))
+            
+            # Find the best neighbor
+            best_neighbor = min(neighbors, key=lambda n: fitness[n[0], n[1]])
+            new_population[i, j] = population[best_neighbor]
+
+            # Add small random perturbation for exploration
+            lower, upper = bounds
+            perturbation = np.random.uniform(-0.1, 0.1, population.shape[2])
+            new_population[i, j] = np.clip(new_population[i, j] + perturbation, lower, upper)
+
+    return new_population
+
+def parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius):
+    """Main function to run the Parallel Cellular Algorithm."""
+    # Step 1: Initialize Population
+    population = initialize_population(grid_size, solution_dim, bounds)
+
+    # Step 2: Iterate to update states and evaluate fitness
+    best_solution = None
+    best_fitness = float('inf')
+
+    for iteration in range(iterations):
+        # Evaluate fitness
+        fitness = evaluate_fitness(population)
+
+        # Track the best solution
+        min_fitness_idx = np.unravel_index(np.argmin(fitness), fitness.shape)
+        if fitness[min_fitness_idx] < best_fitness:
+            best_fitness = fitness[min_fitness_idx]
+            best_solution = population[min_fitness_idx]
+
+        # Update states
+        population = update_states(population, fitness, neighborhood_radius, bounds)
+
+        print(f"Iteration {iteration + 1}: Best Fitness = {best_fitness}")
+
+    return best_solution, best_fitness
+
+# Parameters
+grid_size = 10            # Size of the 2D grid
+solution_dim = 2          # Dimensionality of the solution
+bounds = (-5, 5)          # Bounds for the solution space
+iterations = 100          # Number of iterations
+neighborhood_radius = 1   # Radius of the neighborhood
+
+# Run the algorithm
+best_solution, best_fitness = parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius)
+
+print("\nBest Solution:", best_solution)
+print("Best Fitness:", best_fitness)
+import numpy as np
+
+def quadratic_function(x):
+    """Quadratic function for optimization. The input x is a 2D array."""
+    return np.sum(x**2-10*x+5)
+
+def initialize_population(grid_size, solution_dim, bounds):
+    """Initialize a 2D grid of random solutions within the given bounds."""
+    lower, upper = bounds
+    population = np.random.uniform(lower, upper, (grid_size, grid_size, solution_dim))
+    return population
+
+def evaluate_fitness(population):
+    """Evaluate the fitness of each solution in the population."""
+    fitness = np.zeros((population.shape[0], population.shape[1]))
+    for i in range(population.shape[0]):
+        for j in range(population.shape[1]):
+            fitness[i, j] = quadratic_function(population[i, j])
+    return fitness
+
+def update_states(population, fitness, neighborhood_radius, bounds):
+    """Update the state of each cell based on its neighbors."""
+    grid_size = population.shape[0]
+    new_population = np.copy(population)
+    
+    for i in range(grid_size):
+        for j in range(grid_size):
+            # Define the neighborhood
+            neighbors = []
+            for di in range(-neighborhood_radius, neighborhood_radius + 1):
+                for dj in range(-neighborhood_radius, neighborhood_radius + 1):
+                    ni, nj = (i + di) % grid_size, (j + dj) % grid_size
+                    neighbors.append((ni, nj))
+            
+            # Find the best neighbor
+            best_neighbor = min(neighbors, key=lambda n: fitness[n[0], n[1]])
+            new_population[i, j] = population[best_neighbor]
+
+            # Add small random perturbation for exploration
+            lower, upper = bounds
+            perturbation = np.random.uniform(-0.1, 0.1, population.shape[2])
+            new_population[i, j] = np.clip(new_population[i, j] + perturbation, lower, upper)
+
+    return new_population
+
+def parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius):
+    """Main function to run the Parallel Cellular Algorithm."""
+    # Step 1: Initialize Population
+    population = initialize_population(grid_size, solution_dim, bounds)
+
+    # Step 2: Iterate to update states and evaluate fitness
+    best_solution = None
+    best_fitness = float('inf')
+
+    for iteration in range(iterations):
+        # Evaluate fitness
+        fitness = evaluate_fitness(population)
+
+        # Track the best solution
+        min_fitness_idx = np.unravel_index(np.argmin(fitness), fitness.shape)
+        if fitness[min_fitness_idx] < best_fitness:
+            best_fitness = fitness[min_fitness_idx]
+            best_solution = population[min_fitness_idx]
+
+        # Update states
+        population = update_states(population, fitness, neighborhood_radius, bounds)
+
+        print(f"Iteration {iteration + 1}: Best Fitness = {best_fitness}")
+
+    return best_solution, best_fitness
+
+# Parameters
+grid_size = 10            # Size of the 2D grid
+solution_dim = 2          # Dimensionality of the solution
+bounds = (-5, 5)          # Bounds for the solution space
+iterations = 100          # Number of iterations
+neighborhood_radius = 1   # Radius of the neighborhood
+
+# Run the algorithm
+best_solution, best_fitness = parallel_cellular_algorithm(grid_size, solution_dim, bounds, iterations, neighborhood_radius)
+
+print("\nBest Solution:", best_solution)
+print("Best Fitness:", best_fitness)
+Iteration 1: Best Fitness = 0.2044247017116301
+Iteration 2: Best Fitness = 0.15077728507584431
+Iteration 3: Best Fitness = 0.09187817236442075
+Iteration 4: Best Fitness = 0.05656503700489458
+Iteration 5: Best Fitness = 0.03371710851191915
+Iteration 6: Best Fitness = 0.006523229077972466
+Iteration 7: Best Fitness = 8.532512225725064e-05
+Iteration 8: Best Fitness = 8.532512225725064e-05
+Iteration 9: Best Fitness = 8.532512225725064e-05
+Iteration 10: Best Fitness = 8.532512225725064e-05
+Iteration 11: Best Fitness = 8.532512225725064e-05
+Iteration 12: Best Fitness = 8.532512225725064e-05
+Iteration 13: Best Fitness = 2.077827663890004e-05
+Iteration 14: Best Fitness = 2.077827663890004e-05
+Iteration 15: Best Fitness = 1.79029872353403e-05
+Iteration 16: Best Fitness = 1.79029872353403e-05
+Iteration 17: Best Fitness = 1.79029872353403e-05
+Iteration 18: Best Fitness = 1.79029872353403e-05
+Iteration 19: Best Fitness = 1.79029872353403e-05
+Iteration 20: Best Fitness = 1.79029872353403e-05
+Iteration 21: Best Fitness = 1.79029872353403e-05
+Iteration 22: Best Fitness = 1.79029872353403e-05
+Iteration 23: Best Fitness = 1.79029872353403e-05
+Iteration 24: Best Fitness = 1.79029872353403e-05
+Iteration 25: Best Fitness = 1.79029872353403e-05
+Iteration 26: Best Fitness = 1.4405661763988932e-05
+Iteration 27: Best Fitness = 6.711898813136484e-07
+Iteration 28: Best Fitness = 6.711898813136484e-07
+Iteration 29: Best Fitness = 6.711898813136484e-07
+Iteration 30: Best Fitness = 6.711898813136484e-07
+Iteration 31: Best Fitness = 6.711898813136484e-07
+Iteration 32: Best Fitness = 6.711898813136484e-07
+Iteration 33: Best Fitness = 6.711898813136484e-07
+Iteration 34: Best Fitness = 6.711898813136484e-07
+Iteration 35: Best Fitness = 6.711898813136484e-07
+Iteration 36: Best Fitness = 6.711898813136484e-07
+Iteration 37: Best Fitness = 6.711898813136484e-07
+Iteration 38: Best Fitness = 6.711898813136484e-07
+Iteration 39: Best Fitness = 6.711898813136484e-07
+Iteration 40: Best Fitness = 6.711898813136484e-07
+Iteration 41: Best Fitness = 6.711898813136484e-07
+Iteration 42: Best Fitness = 6.711898813136484e-07
+Iteration 43: Best Fitness = 6.711898813136484e-07
+Iteration 44: Best Fitness = 6.711898813136484e-07
+Iteration 45: Best Fitness = 6.711898813136484e-07
+Iteration 46: Best Fitness = 6.711898813136484e-07
+Iteration 47: Best Fitness = 6.711898813136484e-07
+Iteration 48: Best Fitness = 6.711898813136484e-07
+Iteration 49: Best Fitness = 6.711898813136484e-07
+Iteration 50: Best Fitness = 6.711898813136484e-07
+Iteration 51: Best Fitness = 6.711898813136484e-07
+Iteration 52: Best Fitness = 6.711898813136484e-07
+Iteration 53: Best Fitness = 6.711898813136484e-07
+Iteration 54: Best Fitness = 6.711898813136484e-07
+Iteration 55: Best Fitness = 6.711898813136484e-07
+Iteration 56: Best Fitness = 6.711898813136484e-07
+Iteration 57: Best Fitness = 6.711898813136484e-07
+Iteration 58: Best Fitness = 6.711898813136484e-07
+Iteration 59: Best Fitness = 6.711898813136484e-07
+Iteration 60: Best Fitness = 6.711898813136484e-07
+Iteration 61: Best Fitness = 6.711898813136484e-07
+Iteration 62: Best Fitness = 6.711898813136484e-07
+Iteration 63: Best Fitness = 6.711898813136484e-07
+Iteration 64: Best Fitness = 6.711898813136484e-07
+Iteration 65: Best Fitness = 6.711898813136484e-07
+Iteration 66: Best Fitness = 6.711898813136484e-07
+Iteration 67: Best Fitness = 6.711898813136484e-07
+Iteration 68: Best Fitness = 6.711898813136484e-07
+Iteration 69: Best Fitness = 6.711898813136484e-07
+Iteration 70: Best Fitness = 6.711898813136484e-07
+Iteration 71: Best Fitness = 6.711898813136484e-07
+Iteration 72: Best Fitness = 6.711898813136484e-07
+Iteration 73: Best Fitness = 6.711898813136484e-07
+Iteration 74: Best Fitness = 6.711898813136484e-07
+Iteration 75: Best Fitness = 6.711898813136484e-07
+Iteration 76: Best Fitness = 6.711898813136484e-07
+Iteration 77: Best Fitness = 6.711898813136484e-07
+Iteration 78: Best Fitness = 6.711898813136484e-07
+Iteration 79: Best Fitness = 6.711898813136484e-07
+Iteration 80: Best Fitness = 6.711898813136484e-07
+Iteration 81: Best Fitness = 6.711898813136484e-07
+Iteration 82: Best Fitness = 6.711898813136484e-07
+Iteration 83: Best Fitness = 6.711898813136484e-07
+Iteration 84: Best Fitness = 6.711898813136484e-07
+Iteration 85: Best Fitness = 6.711898813136484e-07
+Iteration 86: Best Fitness = 6.711898813136484e-07
+Iteration 87: Best Fitness = 6.711898813136484e-07
+Iteration 88: Best Fitness = 6.711898813136484e-07
+Iteration 89: Best Fitness = 6.711898813136484e-07
+Iteration 90: Best Fitness = 6.711898813136484e-07
+Iteration 91: Best Fitness = 6.711898813136484e-07
+Iteration 92: Best Fitness = 6.711898813136484e-07
+Iteration 93: Best Fitness = 6.711898813136484e-07
+Iteration 94: Best Fitness = 6.711898813136484e-07
+Iteration 95: Best Fitness = 6.711898813136484e-07
+Iteration 96: Best Fitness = 6.711898813136484e-07
+Iteration 97: Best Fitness = 6.711898813136484e-07
+Iteration 98: Best Fitness = 6.711898813136484e-07
+Iteration 99: Best Fitness = 6.711898813136484e-07
+Iteration 100: Best Fitness = 6.711898813136484e-07
+
+Best Solution: [-0.00067719 -0.00046109]
+Best Fitness: 6.711898813136484e-07
